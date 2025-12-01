@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+
+.venv/
+env/
+venv/
+
+# do NOT commit secrets
+.env
+
+# local data
+data/raw/
+
+.ipynb_checkpoints/
+.DS_Store
