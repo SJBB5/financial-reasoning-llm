@@ -5,7 +5,6 @@ __pycache__/
 env/
 venv/
 
-# do NOT commit secrets
 .env
 
 # local data
