@@ -1,11 +1,9 @@
-
-
 //placeholder for graph, labels and data will be supplied here
 const data = {
     labels: ["2025-11-01", "2025-11-02", "2025-11-03", "2025-11-04", "2025-11-05"],
     datasets: [{
         label: 'Stock % Change',
-        data: [1.2, -0.5, 2.3, -1.1, 0.8],
+        data: [1.2, -0.5, 2.3, -1.1, 0.8], //preset data that im keeping
         borderColor: '#4CAF50',
         backgroundColor: 'rgba(76, 175, 80, 0.2)',
         tension: 0.4,
@@ -28,7 +26,6 @@ const config ={
     }
 };
 
-
 const ctx = document.getElementById('graphChart').getContext('2d');
 const graphChart = new Chart(ctx, config);
 
@@ -38,7 +35,61 @@ function updateOutput(text) {
     outputDiv.textContent = text;
 }
 
-// failsafe timeout (literally a placeholder for now)
-setTimeout(() => {
-    updateOutput("The stock showed a large jump on Nov 3 likely due to positive earnings. Other small fluctuations seem normal.");
-}, 2000);
+
+// backend here
+
+const ticker = "AAPL"; //placeholder here
+
+// fetch big moves from backend
+async function fetchMoves() {
+    try {
+        const res = await fetch(`/data/${ticker}`);
+        const data = await res.json();
+
+        const moves = data.moves || [];
+        const labels = moves.map(m => m.time);
+        const values = moves.map(m => m.move);
+
+        //update the existing chart with new data
+        graphChart.data.labels = labels;
+        graphChart.data.datasets[0].data = values;
+        graphChart.update();
+
+        return moves;
+    } catch (err) {
+        console.error("Error fetching moves:", err);
+        return [];
+    }
+}
+
+//fetch LLM explanation from sam backend
+async function fetchExplanation(moves) {
+    try {
+        const res = await fetch("/explain", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ticker: ticker })
+        });
+        const data = await res.json();
+        updateOutput(data.explanation);
+    } catch (err) {
+        console.error("Error fetching explanation:", err);
+        updateOutput("Error fetching explanation");
+    }
+}
+
+//main loader function
+async function loadData() {
+    const moves = await fetchMoves();
+    if (moves.length === 0) {
+        updateOutput("No big moves found for this ticker.");
+        return;
+    }
+    await fetchExplanation(moves);
+}
+
+//load
+loadData();
+
+//Refresh 30 sec
+setInterval(loadData, 30000);
