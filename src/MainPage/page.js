@@ -58,12 +58,13 @@ async function fetchMoves() {
         return moves;
     } catch (err) {
         console.error("Error fetching moves:", err);
-        return [];
-    }
+        updateOutput("Error loading data. Please try again.");
+    return [];
+}
 }
 
 //fetch LLM explanation from sam backend
-async function fetchExplanation(moves) {
+async function fetchExplanation() {
     try {
         const res = await fetch("/explain", {
             method: "POST",
@@ -91,5 +92,5 @@ async function loadData() {
 //load
 loadData();
 
-//Refresh 30 sec
-setInterval(loadData, 30000);
+//Refresh 5 min 
+setInterval(loadData, 300000);
