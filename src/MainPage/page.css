@@ -1,0 +1,65 @@
+/* copy and pasted from previous project ngl */
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Raleway',sans-serif;
+    background: linear-gradient(45deg, #1d0a0b, #3a3a3a, #233d29, #0a3113);
+    background-size: 300% 300%;
+    color: #fff;
+    min-height: 100vh;
+    animation: gradientAnimation 30s ease infinite;
+    display: flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+header {
+    width: 100%;
+    text-align:center;
+    padding: 30px 0;
+    background-color: rgba(0,0,0,0.5);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    width: 90%;
+    max-width: 1400px;
+    gap: 20px;
+}
+
+.graph-module {
+    flex: 2; /* bigger box for now */
+    background-color: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.graph-module canvas {
+    width: 100% !important;
+    height: 400px !important;
+}
+
+.output-module {
+    flex: 1; /* might change this later its annoying */
+    background-color: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius:10px;
+    font-size: 1rem;
+    overflow-y: auto;
+    max-height: 400px;
+}
