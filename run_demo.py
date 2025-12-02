@@ -2,7 +2,7 @@
 
 from src.data_pipeline import get_data
 from src.anomaly_detection import find_big_moves
-from src.llm_reasoning import explain_moves
+from src.llm_reasoning_playground import explain_moves
 from src.news_data import get_news
 
 def main():

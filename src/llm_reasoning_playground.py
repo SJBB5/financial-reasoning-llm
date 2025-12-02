@@ -1,6 +1,9 @@
 # Sam Brown
 # building prompt and calling openai
 
+# Refine the means used to call the model, with the goal of refining the thinking provided by the chatbot
+# and engineering the chatbot request to obtain more accurate results
+
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -8,20 +11,25 @@ from dotenv import load_dotenv
 # load .env
 load_dotenv()
 
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def build_prompt(ticker, moves, headlines):
     # make prompt for gpt using large movees and headlines (not lined up by dates yet, just getting it working for now)
     lines = []
-    lines.append(f"You are a financial analyst looking at {ticker}.")
-    lines.append("Here are some big price moves (percent changes):")
+    lines.append(f"Context: You are a financial analysis aid, with the goal of analyzing this stock: {ticker}")
+    lines.append(f"You are expected to provide an overview of the current trends of the stock market in general, and the trends associated with this specific stock ({ticker})")
+    lines.append(f"To acomplish this, you are provided with the most current and significant price changes of {ticker}, and large headlines associated with both the stock and the stock market as a whole")
+    lines.append("Before generating output. Format a simple human language response to "
+        "explain to users the trends found in the data.  Do not format the responses with any markdown atributes (###, **, etc)")
+    lines.append("Current significant price changes (percent changes):")
     lines.append("")
 
     for m in moves:
         lines.append(f"- {m['time']} : {m['move']:.2f}%")
 
     lines.append("")
-    lines.append("Here are recent news headlines for this ticker:")
+    lines.append("Recent headlines:")
     lines.append("")
 
     if not headlines:
@@ -33,8 +41,9 @@ def build_prompt(ticker, moves, headlines):
 
     lines.append("")
     lines.append(
-        "Based on the moves and the headlines, explain in simple language "
-        "what might be going on with this stock. If you are not sure, say that."
+        f"Using the given significant stock price changes, and associated headlines for the stock {ticker}, analyze the "
+        "underlying trends as associated with the movements of the stock price, highlighting the causes behind price movement, "
+        f"and finally general stock market trends that may have correlation with the movement of {ticker} stock price"
     )
 
     return "\n".join(lines)
@@ -51,7 +60,7 @@ def explain_moves(ticker, moves, headlines):
     prompt = build_prompt(ticker, moves, headlines)
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # can try different models - may be better to try 4o or 4.1 as while more expensive, 4o-mini 
+        model="gpt-4o-mini",  # can try different models
         messages=[
             {
                 "role": "system",
@@ -60,7 +69,7 @@ def explain_moves(ticker, moves, headlines):
             {"role": "user", "content": prompt},
         ],
         temperature=0.3, # how creative model can be in response
-        max_tokens=400, # size of response
+        max_tokens=1000, # size of response
     )
 
     text = response.choices[0].message.content
