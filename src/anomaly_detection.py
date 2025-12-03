@@ -10,10 +10,11 @@ def find_big_moves(df, threshold=2.0):
     big = df[abs(df["return_pct"]) >= threshold]
     results = []
 
-    # Get info on each "big move"
+    # Get info on each "big move" (most important is time for news scraping)
     for ts, row in big.iterrows():
         results.append({
             "time": ts,
+            "date": ts.normalize().date(),
             "move": float(row["return_pct"]),
         })
 
