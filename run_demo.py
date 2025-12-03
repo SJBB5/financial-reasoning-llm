@@ -2,65 +2,55 @@
 
 from src.data_pipeline import get_data
 from src.anomaly_detection import find_big_moves
-from src.llm_reasoning_playground import explain_moves
-from src.news_data import get_news
+from src.news_data import get_news_for_moves
+from src.llm_reasoning import explain_moves
 
 def main():
-    # what we are using for now to test
     ticker = "AAPL"
-    threshold = 3.0 # percent move
-    news_limit = 10 # how many headlines from finviz
+    threshold = 5.0  # pct move
+    window_days = 1 # news window around each move
+    per_move_limit = 50  # max headlines per move window
 
     print("ticker:", ticker)
 
-    # get price data
+    #  price data
     df = get_data(ticker)
-    if df is None:
+    if df is None or df.empty:
         print("could not get data")
-        return None
+        return
 
-    # find big moves
-    print("finding big moves...")
-    moves = find_big_moves(df, threshold=threshold)
-
+    # big moves (list of dictionaries with time, date, and move size)
+    moves = find_big_moves(df, threshold=threshold) 
     if not moves:
         print("no big moves found")
-        return None
+        return
 
-    print(f"found {len(moves)} big moves\n")
+    print(f"found {len(moves)} big moves")
 
-    # get news from FinViz
-    print("getting news from finviz...")
-    headlines = get_news(ticker, limit=news_limit)
+    # news per move 
+    news_by_date = get_news_for_moves(
+        ticker,
+        moves,
+        window_days=window_days,
+        limit=per_move_limit,
+    )
 
-    if not headlines:
-        print("no headlines found")
-    else:
-        print("recent headlines:")
-        for h in headlines:
-            print("-", h.get("title"))
-        print()
+    # list how many headlines for each move
+    for m in moves:
+        d = m["date"]
+        print(f"{d} ({m['move']:.2f}%): {len(news_by_date.get(d, []))} headlines")
 
-    # ask the LLM to explain, using moves + headlines
-    print("asking LLM for explanation...\n")
-    explanation = explain_moves(ticker, moves, headlines)
-
-    print("LLM explanation:\n")
+    # LLM explanation
+    explanation = explain_moves(ticker, moves, news_by_date)
+    print("\nLLM explanation:\n")
     print(explanation)
-    
-    # Return results with LLM parameters
+
     return {
-        "explanation": explanation,
         "ticker": ticker,
         "moves": moves,
-        "headlines": headlines,
-        "llm_config": {
-            "model": "gpt-4o-mini",
-            "temperature": 0.3,
-            "max_tokens": 1000
-        }
+        "news_by_date": news_by_date,
+        "explanation": explanation,
     }
-
 
 if __name__ == "__main__":
     main()
