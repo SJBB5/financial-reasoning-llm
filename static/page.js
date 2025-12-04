@@ -2,6 +2,7 @@
 
 
 let graphChart = null;
+let rawDataChart = null;
 
 //create chart with formatted colors (this looked the best so dont fucking change it)
 function initChart() {
@@ -18,11 +19,11 @@ function initChart() {
                 backgroundColor: 'rgba(76, 175, 80, 0.2)',
                 tension: 0.4,
                 fill: true,
-                pointRadius: 6,
+                pointRadius: [],
                 pointHoverRadius: 8,
-                pointBackgroundColor:'#4CAF50',
+                pointBackgroundColor: [],
                 pointBorderColor: '#fff',
-                pointBorderWidth:2
+                pointBorderWidth: 2
             }]
         },
         options: {
@@ -89,6 +90,90 @@ function initChart() {
     }); //literally just dont touch this
 }
 
+//create raw stock data chart
+function initRawDataChart() {
+    const ctx = document.getElementById('rawDataChart').getContext('2d');
+    
+    rawDataChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Stock Price',
+                data: [],
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.2)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#2196F3',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            size: 14,
+                            family: 'Raleway'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 14,
+                        family: 'Raleway'
+                    },
+                    bodyFont: {
+                        size: 13,
+                        family: 'Raleway'
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return `$${context.parsed.y.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#fff',
+                        font: {
+                            family: 'Raleway'
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#fff',
+                        font: {
+                            family: 'Raleway'
+                        },
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 //tickers in dropdown
 async function loadTickers(){
     try {
@@ -118,8 +203,11 @@ async function loadTickers(){
 
 //show or hide loading statea, currently set to disable loading for this
 function setLoading(isLoading) {
-    document.getElementById('loading').style.display = isLoading ? 'block' : 'none'; //i still dont know what tehse ? 
-    document.querySelector('.container').style.display = isLoading ? 'none' : 'flex';
+    document.getElementById('loading').style.display = isLoading ? 'block' : 'none'; //i still dont know what tehse 
+    const containers = document.querySelectorAll('.container');
+    containers.forEach(container => {
+        container.style.display = isLoading ? 'none' : 'flex';
+    });
     document.getElementById('analyze-btn').disabled = isLoading;
     document.getElementById('ticker-select').disabled = isLoading;
     document.getElementById('threshold-input').disabled = isLoading;
@@ -127,6 +215,9 @@ function setLoading(isLoading) {
 
 //quick and easy formatting 
 function formatExplanation(text) {
+    text = text.replace(/^#\s*$/gm, '');
+    text = text.replace(/^#\s+\d+\./gm, '');
+                                            //removes # in some summaries issue NOT WORKING WTF
     //markdown style 
     text = text.replace(/### (.*)/g, '<h3>$1</h3>');
     text = text.replace(/## (.*)/g, '<h2>$1</h2>');
@@ -161,7 +252,7 @@ async function analyzeStock() {
         return;
     }
 
-    //hudson check these tickers are working
+    //hudson check these tickers are working (done) to hudson from hudson
     
     if (isNaN(threshold) || threshold < 1 || threshold > 20) {
         alert('Please enter a valid threshold between 1 and 20');
@@ -184,7 +275,7 @@ async function analyzeStock() {
                 threshold: threshold
             })
         });
-        
+        console.log('Response status:', response.status, 'OK?', response.ok);
         if (!response.ok){
             const errorData = await response.json();
             throw new Error(errorData.error || 'Analysis failed');
@@ -208,8 +299,26 @@ async function analyzeStock() {
             
             const values = data.moves.map(m => m.move);
             
+            // Find max and min values
+            const maxValue = Math.max(...values);
+            const minValue = Math.min(...values);
+            
+            // Set point sizes and colors - highlight max/min
+            const pointRadii = values.map(v => {
+                if (v === maxValue || v === minValue) return 10;
+                return 6;
+            });
+            
+            const pointColors = values.map(v => {
+                if (v === maxValue) return '#FFD700'; // gold for max
+                if (v === minValue) return '#FF6B6B'; // red for min
+                return '#4CAF50';
+            });
+            
             graphChart.data.labels =labels;
             graphChart.data.datasets[0].data =values;
+            graphChart.data.datasets[0].pointRadius = pointRadii;
+            graphChart.data.datasets[0].pointBackgroundColor = pointColors;
             graphChart.data.datasets[0].label =`${data.ticker} - Big Moves (>${threshold}% threshold)`;
             //update chart here
             graphChart.update();
@@ -219,6 +328,29 @@ async function analyzeStock() {
             //keep as arrays for data row/col
             graphChart.data.datasets[0].data = [];
             graphChart.update();
+        }
+        
+        // Update raw data chart
+        // Update raw data chart
+        if (data.raw_data && data.raw_data.dates && data.raw_data.prices) {
+            console.log('Raw data received:', data.raw_data.dates.length, 'dates,', data.raw_data.prices.length, 'prices');
+            const rawLabels = data.raw_data.dates.map(d => {
+                const date = new Date(d);
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            });
+    
+            rawDataChart.data.labels = rawLabels;
+            rawDataChart.data.datasets[0].data = data.raw_data.prices;
+            rawDataChart.data.datasets[0].label = `${data.ticker} - Stock Price`;
+            rawDataChart.update();
+            console.log('Updated raw chart, first price:', data.raw_data.prices[0]);
+            console.log('Chart updated. Canvas exists?', document.getElementById('rawDataChart') !== null);
+            console.log('Chart has data?', rawDataChart.data.datasets[0].data.length);
+            
         }
         
         //resend data to explanation module
@@ -250,6 +382,7 @@ async function analyzeStock() {
 //default values on page load
 window.addEventListener('DOMContentLoaded', () => {
     initChart();
+    initRawDataChart();
     loadTickers();
 });
 

@@ -4,8 +4,12 @@
 import yfinance as yf
 import pandas as pd
 
-def get_data(ticker, period="2y", interval="1d"): # List of possible tickers found in docdumentation
+def get_data(ticker, period="2y", interval="1d"):
     data = yf.download(ticker, period=period, interval=interval, auto_adjust=True)
+    
+    # Flatten multi-level columns if they exist
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
     if data.empty:
         print("no data for", ticker)
         return None

@@ -77,21 +77,28 @@ def analyze():
         explanation = explain_moves(ticker, moves, news_by_date)
         
         #format response here, following reg format i use usually
+
         result = {
             "ticker": ticker,
             "moves": [
                 {
-                    "time": str(m["time"]), 
+                    "time": str(m["time"]),
                     "date": str(m["date"]),
                     "move": m["move"]
                 }
                 for m in moves
             ],
+            "raw_data": {
+                 "dates": [str(d) for d in df.index],
+                "prices": [float(x) for x in df["Close"]]
+            },
+
             "explanation": explanation,
             "timestamp": datetime.now().isoformat()
         }
         
-        print(f"Analysis complete for {ticker}")
+        print(f"✅ Analysis complete for {ticker}")
+        print(f"📊 Raw data: {len(df)} rows")
         return jsonify(result) #make sure ots jsonify result, otherwise so many errors and this took me foreve rto find
         
     except Exception as e: #chat exception
