@@ -51,7 +51,7 @@ def analyze():
             return jsonify({
                 "error": f"Could not get data for {ticker}",
                 "ticker": ticker
-            }), 404 #In case of error thanks chat
+            }), 404 #In caswe of error thanks chat
         
         #big
         moves = find_big_moves(df, threshold=threshold)
@@ -78,6 +78,17 @@ def analyze():
         
         #format response here, following reg format i use usually
 
+        #Get date range from moves to match timeframes
+        if moves:
+            move_dates = [m["date"] for m in moves]
+            min_date = min(move_dates)
+            max_date = max(move_dates)
+        
+            #dataframe to match moves timeframe here
+            filtered_df = df.loc[min_date:max_date]
+        else:
+            filtered_df = df
+        #regular stuff as before
         result = {
             "ticker": ticker,
             "moves": [
@@ -89,10 +100,9 @@ def analyze():
                 for m in moves
             ],
             "raw_data": {
-                 "dates": [str(d) for d in df.index],
-                "prices": [float(x) for x in df["Close"]]
+                "dates": [str(d) for d in filtered_df.index],
+                "prices": [float(x) for x in filtered_df["Close"]] #DO NOT "DOLIST"
             },
-
             "explanation": explanation,
             "timestamp": datetime.now().isoformat()
         }
