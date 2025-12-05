@@ -1,6 +1,5 @@
 /* copy and pasted from previous project ngl */
 
-
 * {
     margin: 0;
     padding: 0;
@@ -35,6 +34,81 @@ header {
     margin-bottom: 20px;
 }
 
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+#ticker-select {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Raleway', sans-serif;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+#threshold-input {
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Raleway', sans-serif;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    width: 120px;
+}
+
+#analyze-btn {
+    padding: 10px 30px;
+    font-size: 1rem;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+#analyze-btn:hover:not(:disabled) {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+#analyze-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #fff;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .container {
     display: flex;
     width: 90%;
@@ -50,6 +124,19 @@ header {
 }
 
 .graph-module canvas {
+    width: 100% !important;
+    height: 400px !important;
+}
+
+.graph-module-full {
+    width: 100%;
+    background-color: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.graph-module-full canvas {
     width: 100% !important;
     height: 400px !important;
 }
