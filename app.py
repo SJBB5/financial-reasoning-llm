@@ -51,7 +51,7 @@ def analyze():
             return jsonify({
                 "error": f"Could not get data for {ticker}",
                 "ticker": ticker
-            }), 404 #In caswe of error thanks chat
+            }), 404 #In case of error thanks chat
         
         #big
         moves = find_big_moves(df, threshold=threshold)

@@ -64,4 +64,50 @@ header {
     max-height: 400px;
 }
 
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.controls select,
+.controls input,
+.controls button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.controls select:hover,
+.controls input:hover,
+.controls button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.controls button {
+    background-color: #4CAF50;
+    font-weight: 600;
+}
+
+.controls button:hover {
+    background-color: #45a049;
+}
+
+.threshold-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 5px;
+}
+
+
 
