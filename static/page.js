@@ -299,19 +299,19 @@ async function analyzeStock() {
             
             const values = data.moves.map(m => m.move);
             
-            // Find max and min values
+            //Find max and min values
             const maxValue = Math.max(...values);
             const minValue = Math.min(...values);
             
-            // Set point sizes and colors - highlight max/min
+            //et point sizes and colors - highlight max/min
             const pointRadii = values.map(v => {
                 if (v === maxValue || v === minValue) return 10;
                 return 6;
             });
             
             const pointColors = values.map(v => {
-                if (v === maxValue) return '#FFD700'; // gold for max
-                if (v === minValue) return '#FF6B6B'; // red for min
+                if (v === maxValue) return '#FFD700'; // gold
+                if (v === minValue) return '#FF6B6B'; // red
                 return '#4CAF50';
             });
             
@@ -330,8 +330,7 @@ async function analyzeStock() {
             graphChart.update();
         }
         
-        // Update raw data chart
-        // Update raw data chart
+        //Update raw data chart hope work
         if (data.raw_data && data.raw_data.dates && data.raw_data.prices) {
             console.log('Raw data received:', data.raw_data.dates.length, 'dates,', data.raw_data.prices.length, 'prices');
             const rawLabels = data.raw_data.dates.map(d => {
@@ -349,7 +348,7 @@ async function analyzeStock() {
             rawDataChart.update();
             console.log('Updated raw chart, first price:', data.raw_data.prices[0]);
             console.log('Chart updated. Canvas exists?', document.getElementById('rawDataChart') !== null);
-            console.log('Chart has data?', rawDataChart.data.datasets[0].data.length);
+            console.log('Chart has data?', rawDataChart.data.datasets[0].data.length); //for anything see console f12
             
         }
         
