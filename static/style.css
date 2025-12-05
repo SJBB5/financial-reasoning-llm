@@ -151,50 +151,95 @@ header {
     max-height: 400px;
 }
 
-.controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 15px;
+/* Explanation styling */
+.explanation-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.controls select,
-.controls input,
-.controls button {
-    padding: 10px 15px;
-    font-size: 1rem;
+.explanation-header h2 {
+    color: #4CAF50;
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+.timestamp {
+    color: #aaa;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
+.explanation-content {
+    line-height: 1.7;
+}
+
+.explanation-content h2 {
+    color: #4CAF50;
+    font-size: 1.3em;
+    margin: 20px 0 10px 0;
+}
+
+.explanation-content h3 {
+    color: #66bb6a;
+    font-size: 1.1em;
+    margin: 15px 0 8px 0;
+}
+
+.explanation-content p {
+    margin-bottom: 12px;
+}
+
+.explanation-content strong {
+    color: #81c784;
+}
+
+.explanation-content hr {
     border: none;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 20px 0;
 }
 
-.controls select:hover,
-.controls input:hover,
-.controls button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+/* Error message */
+.error-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #ff6b6b;
 }
 
-.controls button {
-    background-color: #4CAF50;
-    font-weight: 600;
+.error-message h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
 }
 
-.controls button:hover {
-    background-color: #45a049;
+/* Scrollbar */
+.output-module::-webkit-scrollbar {
+    width: 8px;
 }
 
-.threshold-control {
-    position: relative;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    gap: 5px;
+.output-module::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
 }
 
+.output-module::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
 
+.output-module::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
 
+/* Responsive */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .graph-module,
+    .output-module {
+        flex: 1;
+        width: 100%;
+    }
+}
