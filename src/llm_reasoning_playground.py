@@ -14,7 +14,7 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def build_prompt(ticker, moves, headlines):
+def build_prompt(ticker, moves, news_by_date):
     # make prompt for gpt using large movees and headlines (not lined up by dates yet, just getting it working for now)
     lines = []
     lines.append(f"Context: You are a financial analysis aid, with the goal of analyzing this stock: {ticker}")
@@ -26,24 +26,30 @@ def build_prompt(ticker, moves, headlines):
     lines.append("")
 
     for m in moves:
-        lines.append(f"- {m['time']} : {m['move']:.2f}%")
+        d = m["date"]
+        move_pct = m["move"]
+        time_str = m["time"]
 
-    lines.append("")
-    lines.append("Recent headlines:")
-    lines.append("")
+        lines.append(f"Date: {d} | Move: {move_pct:.2f}% | Timestamp: {time_str}")
 
-    if not headlines:
-        lines.append("- (no headlines found)")
-    else:
-        for h in headlines:
-            title = h.get("title")
-            lines.append(f"- {title}")
+        # Get headlines for this move's date
+        headlines = news_by_date.get(d, [])
+
+        if not headlines:
+            lines.append("Headlines: (no news found near this date)")
+        else:
+            lines.append("Headlines around this date:")
+            for h in headlines:
+                lines.append(f" - {h.get('date')}: {h.get('title')}")
+        lines.append("")
+
 
     lines.append("")
     lines.append(
         f"Using the given significant stock price changes, and associated headlines for the stock {ticker}, analyze the "
         "underlying trends as associated with the movements of the stock price, highlighting the causes behind price movement, "
         f"and finally general stock market trends that may have correlation with the movement of {ticker} stock price"
+        "When explaining recent price movements, report the trends per month going back 1 year  (IE December -10%, January +25%), and then report the aggregate change from the first month to now "
     )
 
     return "\n".join(lines)
@@ -69,7 +75,7 @@ def explain_moves(ticker, moves, headlines):
             {"role": "user", "content": prompt},
         ],
         temperature=0.3, # how creative model can be in response
-        max_tokens=1000, # size of response
+        max_tokens=5000, # size of response
     )
 
     text = response.choices[0].message.content

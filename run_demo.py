@@ -3,10 +3,10 @@
 from src.data_pipeline import get_data
 from src.anomaly_detection import find_big_moves
 from src.news_data import get_news_for_moves
-from src.llm_reasoning import explain_moves
+from src.llm_reasoning_playground import explain_moves
 
 def main():
-    ticker = "AAPL"
+    ticker = "ORCL"
     threshold = 5.0  # pct move
     window_days = 1 # news window around each move
     per_move_limit = 50  # max headlines per move window
