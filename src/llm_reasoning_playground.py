@@ -46,10 +46,22 @@ def build_prompt(ticker, moves, news_by_date):
 
     lines.append("")
     lines.append(
-        f"Using the given significant stock price changes, and associated headlines for the stock {ticker}, analyze the "
+        f"SECTION 1: Using the given significant stock price changes, and associated headlines for the stock {ticker}, analyze the "
         "underlying trends as associated with the movements of the stock price, highlighting the causes behind price movement, "
-        f"and finally general stock market trends that may have correlation with the movement of {ticker} stock price"
-        "When explaining recent price movements, report the trends per month going back 1 year  (IE December -10%, January +25%), and then report the aggregate change from the first month to now "
+        "Report the overview for stock changes per day, and important / associated headlines"
+        "When explaining recent price movements (big moves and their associated headlines), use the following template.  Input the date of the day being analyzed at { date }, and the percent change at { percent change }.  Report all the dates and then the monthly overview" # report the trends per month going back 1 year from the current date  (IE December -10%, January +25%), and to finish the stockprice report, report the aggregate change from the first month analyzed to now.  (IE Stock rose by 18 percent from Jan to Dec in 2025)"
+        "EXAMPLE OUTPUT FOR SECTION 1" 
+        "Month of January\n"
+        "   **January { date } {year}:** { Percent change }\n" 
+        "       Explanation for Jan { date }\n"
+        "   Repeat for all dates in the month of january"
+        "**Monthly overview for January { year }: { Percent change }**\n"
+        "   Explanation for the whole month of January\n"
+        "Continue the above pattern for each month with data\n"
+        "SECTION 2: After completing the remaining months, give a summary of the past year, and the aggregate stock change\n"
+        "**Stock Price change from {First month analyzed} to {last month analyzed} was: XX\%\n"
+        "   Summary of the months and stock price actions\n"
+        f"SECTION 3: finally general stock market trends that may have correlation with the movement of {ticker} stock price"
     )
 
     return "\n".join(lines)
